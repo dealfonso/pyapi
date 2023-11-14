@@ -15,7 +15,27 @@
 #
 import sys
 from datetime import datetime
-from . import config
+
+# The log level (TRACE, DEBUG, INFO, WARNING, ERROR, CRITICAL)
+LOG_LEVEL = "INFO"
+
+# The log file (if None, no log file is used)
+LOG_FILE = None
+
+# Quiet mode (no output to stdout)
+QUIET = False
+
+def set_log_level(level):
+    global LOG_LEVEL
+    LOG_LEVEL = level
+
+def set_log_file(filename):
+    global LOG_FILE
+    LOG_FILE = filename
+
+def set_quiet(quiet):
+    global QUIET
+    QUIET = quiet
 
 def _n_debug_val(name):
     try:
@@ -25,19 +45,22 @@ def _n_debug_val(name):
         return _n_debug_val("INFO")
 
 def p_log(level, *args):
-    if _n_debug_val(level) <= _n_debug_val(config.LOG_LEVEL):
+    # Get the global variables of this module
+    global LOG_FILE, LOG_LEVEL, QUIET
+
+    if _n_debug_val(level) <= _n_debug_val(LOG_LEVEL):
         log_string = "[{}] {} {}".format(level, str(datetime.now()), " ".join([str(x) for x in args]))
-        if config.LOG_FILE is not None:
+        if LOG_FILE is not None:
             try:
-                with open(config.LOG_FILE, "a") as f:
+                with open(LOG_FILE, "a") as f:
                     f.write(log_string + "\n")
                     f.flush()
             except Exception as e:
-                print("Error writting to log file %s: %s" % (config.LOG_FILE, str(e)))
+                print("Error writting to log file %s: %s" % (LOG_FILE, str(e)))
                 print("Deactivating writting to log file")
-                config.LOG_FILE = None
+                LOG_FILE = None
 
-        if not config.QUIET:
+        if not QUIET:
             print(log_string)
 
 def p_trace(*args):

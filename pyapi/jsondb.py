@@ -108,7 +108,7 @@ class JsonDB:
     def __str__(self) -> str:
         return json.dumps(self._serialize(), indent=2)
     
-    def rawObject(self) -> object:
+    def asObject(self) -> object:
         """Returns the object that is being serialized to the disk
 
         Returns:
@@ -128,4 +128,3 @@ class EmptyJsonDB(JsonDB):
         return {
             "message": "Empty Dummy DB"
         }
-
